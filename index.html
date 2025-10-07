@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-bs-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>حاسبة مجموعين</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    /* تحسين الطباعة: إخفاء العناصر غير المهمة وإظهار البطاقات بشكل نظيف */
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { box-shadow: none !important; border: 1px solid #ccc !important; }
+      .container { max-width: 900px; }
+    }
+  </style>
+</head>
+<body class="bg-body">
+  <div class="container py-4">
+    <!-- شريط علوي -->
+    <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+      <h1 class="h4 mb-0">511</h1>
+
+      <div class="d-flex gap-2 no-print">
+        <button id="toggleTheme" class="btn btn-outline-secondary btn-sm" type="button" title="تبديل الوضع">
+          تبديل الوضع (فاتح/داكن)
+        </button>
+        <button id="btnPrint" class="btn btn-primary btn-sm" type="button" title="تحميل PDF">
+          تحميل PDF
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Group A -->
+      <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+          <h5 class="text-primary mb-3 text-center">مشاري</h5>
+          <div id="groupA" class="row g-2">
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+          </div>
+          <hr>
+          <p class="mb-1 text-end"><b>المجموع:</b> <span id="sumA">0</span></p>
+          <p class="mb-0 text-end"><b>المجموع ÷ 2:</b> <span id="halfA">0</span></p>
+        </div>
+      </div>
+
+      <!-- Group B -->
+      <div class="col-md-6">
+        <div class="card p-3 shadow-sm">
+          <h5 class="text-success mb-3 text-center">مشعل</h5>
+          <div id="groupB" class="row g-2">
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+            <div class="col-6"><input type="number" class="form-control" placeholder="مبلغ"></div>
+          </div>
+          <hr>
+          <p class="mb-1 text-end"><b>المجموع:</b> <span id="sumB">0</span></p>
+          <p class="mb-0 text-end"><b>المجموع ÷ 2:</b> <span id="halfB">0</span></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall -->
+    <div class="card mt-4 p-3 shadow-sm">
+      <h5 class="text-center text-secondary">الإجمالي</h5>
+
+      <div class="row text-center g-3 mt-1">
+        <div class="col-12 col-md-6">
+          <div class="p-2 border rounded">
+            <div class="small text-secondary">التاريخ (ميلادي)</div>
+            <div id="dateG" class="fw-semibold">—</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="p-2 border rounded">
+            <div class="small text-secondary">التاريخ (هجري)</div>
+            <div id="dateH" class="fw-semibold">—</div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+
+      <p class="mb-1 text-center"><b>الفارق قبل القسمة (مجموع مشاري − مجموع مشعل):</b>
+        <span id="diffSum">0</span>
+      </p>
+
+      <p class="mb-0 text-center"><b>الفارق بعد القسمة (المجموع ÷ 2):</b>
+        <span id="diffHalf">0</span>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ======== الحسابات ========
+    function calcSum(containerId) {
+      const nums = Array.from(document.querySelectorAll('#' + containerId + ' input'))
+        .map(i => parseFloat(i.value))
+        .filter(n => !isNaN(n));
+      return nums.reduce((a, b) => a + b, 0);
+    }
+
+    function recalc() {
+      const sumA = calcSum('groupA');
+      const sumB = calcSum('groupB');
+      const halfA = sumA / 2;
+      const halfB = sumB / 2;
+
+      const diffSum  = sumA - sumB;     // الفارق قبل القسمة
+      const diffHalf = halfA - halfB;   // الفارق بعد القسمة
+
+      document.getElementById('sumA').textContent   = sumA.toFixed(2);
+      document.getElementById('halfA').textContent  = halfA.toFixed(2);
+      document.getElementById('sumB').textContent   = sumB.toFixed(2);
+      document.getElementById('halfB').textContent  = halfB.toFixed(2);
+      document.getElementById('diffSum').textContent  = diffSum.toFixed(2);
+      document.getElementById('diffHalf').textContent = diffHalf.toFixed(2);
+    }
+
+    document.querySelectorAll('input').forEach(i => i.addEventListener('input', recalc));
+
+    // ======== التاريخ الميلادي والهجري ========
+    function setDates() {
+      const now = new Date();
+
+      // ميلادي (force Gregorian calendar with Arabic locale)
+      const fmtG = new Intl.DateTimeFormat('ar-SA-u-ca-gregory', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      }).format(now);
+
+      // هجري (Umm al-Qura in most browsers)
+      const fmtH = new Intl.DateTimeFormat('ar-SA-u-ca-islamic', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+      }).format(now);
+
+      document.getElementById('dateG').textContent = fmtG;
+      document.getElementById('dateH').textContent = fmtH;
+    }
+
+    // ======== الطباعة إلى PDF ========
+    function handlePrint() {
+      // تحدّث الأرقام قبل الطباعة
+      recalc();
+      // افتح نافذة الطباعة (يمكن اختيار Save as PDF)
+      window.print();
+    }
+
+    // ======== تبديل الوضع الداكن/الفاتح (Bootstrap 5.3) ========
+    const rootHtml = document.documentElement; // <html>
+    const THEME_KEY = 'calc-theme';
+
+    function applyTheme(theme) {
+      rootHtml.setAttribute('data-bs-theme', theme);
+      localStorage.setItem(THEME_KEY, theme);
+    }
+
+    function toggleTheme() {
+      const current = rootHtml.getAttribute('data-bs-theme') || 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // تحميل الإعدادات وتحديث الصفحة
+    (function init() {
+      // استرجاع الثيم المخزّن (إن وجد)
+      const saved = localStorage.getItem(THEME_KEY);
+      if (saved) applyTheme(saved);
+
+      setDates();
+      recalc();
+
+      document.getElementById('toggleTheme').addEventListener('click', toggleTheme);
+      document.getElementById('btnPrint').addEventListener('click', handlePrint);
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
